@@ -26,6 +26,7 @@ class EntityElement:
             self.original_alias = row[5]
 
         self.url="https://www.wikidata.org/wiki/Q{}".format(self.get_id())
+        self.uri=f"http://www.wikidata.org/entity/Q{self.get_id()}"
         if span:
             self.span_info = SpanInfo.from_span(span)
         else:
@@ -128,8 +129,11 @@ class EntityElement:
     def get_url(self):
         return self.url
 
+    def get_uri(self):
+        return self.uri
+
     def __repr__(self):
-        return "<EntityElement: {}>".format(self.get_preview_string())
+        return "{} -> <EntityElement: {}>".format(self.span_info, self.get_preview_string())
 
     def get_preview_string(self):
         return "{0:<10} {1:<25} {2:<50}".format(self.get_url(),self.get_label(),self.get_description()[:100])

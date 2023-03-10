@@ -5,6 +5,6 @@ except ImportError:
 
 from .EntityLinker import EntityLinker
 
-pkg_meta = importlib_metadata.metadata(__name__.split(".")[0])
-__version__ = pkg_meta["version"]
-__all__ = [EntityLinker]
+#pkg_meta = importlib_metadata.metadata(__name__.split(".")[0])
+#__version__ = pkg_meta["version"]
+#__all__ = [EntityLinker]

@@ -2,6 +2,23 @@
 [![Downloads](https://static.pepy.tech/badge/spacy-entity-linker)](https://pepy.tech/project/spacy-entity-linker)
 [![Current Release Version](https://img.shields.io/github/release/egerber/spaCy-entity-linker.svg?style=flat-square&logo=github)](https://github.com/egerber/spaCy-entity-linker/releases)
 [![pypi Version](https://img.shields.io/pypi/v/spacy-entity-linker.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/spacy-entity-linker/)
+
+## Contextual entity linker
+
+This repo contains a fork of the Spacy Entity Linker with some additional configurations
+made to consider the KG context of entities when performing linking.
+
+The main difference from the original pipeline are that you now have to specify a URL to query
+Wikidata and that you can specify weights for different kinds of evidence from the KG
+to support contextual entity linking.
+
+E.g., : `
+nlp.add_pipe("entityLinker", config={"query_url":"https://query.wikidata.org/sparql",
+                                      "link_weight":100,
+                                      "hop_weight":100
+                                      }, last=True)
+`
+
 # Spacy Entity Linker
 
 ## Introduction

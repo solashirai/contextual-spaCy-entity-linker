@@ -1,6 +1,6 @@
 import unittest
 import spacy
-from spacy_entity_linker.EntityCollection import EntityCollection
+from c_spacy_entity_linker.EntityCollection import EntityCollection
 
 
 class TestEntityCollection(unittest.TestCase):
