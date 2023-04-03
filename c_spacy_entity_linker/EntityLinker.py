@@ -375,10 +375,10 @@ class EntityLinker:
                     else:
                         link_choices = []
                         for o in g[ent]:
+                            if o in core_entities:
+                                continue
                             if o in g[ent2] or ent2 in g[o]:
                                 link_choices.append(o)
-                        if ent == "http://www.wikidata.org/entity/Q640506":
-                            print("????????", link_choices)
                         if link_choices:
                             # using too many linking entities will cause errors when querying wikidata
                             # randomly choose them for now, TODO choose based on prior or something
@@ -392,7 +392,7 @@ class EntityLinker:
             linking_entities -= core_entities
             return mapping_choices, core_entities, linking_entities
 
-    def lp_disambiguate_prev(self, mappings, triples):
+    def lp_disambiguate_old(self, mappings, triples):
         uri2obj = {}
         model = cp_model.CpModel()
 
