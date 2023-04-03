@@ -1,5 +1,6 @@
 from .EntityCandidates import EntityCandidates
 from .EntityElement import EntityElement
+from .TextEntityElement import TextEntityElement
 from .DatabaseConnection import get_wikidata_instance
 
 
@@ -21,6 +22,18 @@ class TermCandidate:
 
     def __str__(self):
         return ', '.join([variation.text for variation in self.variations])
+
+    def get_entity_candidates_gpt_names(self):
+        wikidata_instance = get_wikidata_instance()
+        entities_by_variation = {}
+        for variation in self.variations:
+            entities_by_variation[variation] = wikidata_instance.get_entities_from_alias(variation)
+
+        entity_elements = []
+        for variation, entities in entities_by_variation.items():
+            entity_elements += [TextEntityElement(entity, variation) for entity in entities]
+
+        return EntityCandidates(entity_elements)
 
     def get_entity_candidates(self):
         wikidata_instance = get_wikidata_instance()

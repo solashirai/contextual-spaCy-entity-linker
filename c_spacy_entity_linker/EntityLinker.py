@@ -12,6 +12,8 @@ from .WeightedEntityClassifier import WeightedEntityClassifier
 from .EntityCollection import EntityCollection
 from .LinkedEntityGraph import LinkedEntityGraph
 from .TermCandidateExtractor import TermCandidateExtractor
+from .TermCandidate import TermCandidate
+from .DatabaseConnection import get_wikidata_instance
 
 @Language.factory('entityLinker')
 class EntityLinker:
@@ -96,6 +98,44 @@ class EntityLinker:
         doc._.linkedEntities = EntityCollection(entities, leg)
 
         return doc
+
+    def link_entities_for_given_names(self, ent_names):
+        classifier = WeightedEntityClassifier()
+
+        candidate_spans = {}
+        for name in ent_names:
+            tc = TermCandidate(name)
+            entityCandidates = tc.get_entity_candidates_gpt_names()
+            entity_weights = classifier(entityCandidates)
+            candidate_spans[name] = entity_weights
+
+        distinct_uris = set()
+        for span, entity_weights in candidate_spans.items():
+            for (e,w) in entity_weights:
+                distinct_uris.add(e.get_uri())
+
+        stime = time.time()
+        context_triples = self.run_construct_queries(all_entity_candidates=distinct_uris)
+        print("finished running construct queries, ", time.time()-stime)
+        ent_to_trip = defaultdict(lambda: set())
+        for (s,p,o) in context_triples:
+            ent_to_trip[s].add((s,p,o))
+            ent_to_trip[o].add((s,p,o))
+        stime = time.time()
+        optimized_candidates, core_entities, linking_entities = self.lp_disambiguate(candidate_spans, context_triples)
+        print('finished LP solving, ', time.time()-stime)
+
+        entities = []
+
+        for span, entity in optimized_candidates.items():
+            # And finally append to the document-level collection
+            entities.append(entity)
+
+        relevant_triples, uri2label = self.collect_relevant_subgraph(core_entities=core_entities,
+                                                                     linking_entities=linking_entities)
+        leg = LinkedEntityGraph(core_entities, linking_entities, relevant_triples, uri2label)
+        linknedEntities = EntityCollection(entities, leg)
+        return linknedEntities
 
     def run_construct_queries(self, all_entity_candidates):
         if len(all_entity_candidates) == 0:
