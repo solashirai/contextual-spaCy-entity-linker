@@ -41,7 +41,9 @@ setup(
         'spacy>=3.0.0',
         'numpy>=1.0.0',
         'tqdm',
-        'ortools'
+        'ortools',
+        'rdflib',
+        'yfiles_jupyter_graphs'
     ],
     entry_points={
         'spacy_factories': 'cEntityLinker = c_spacy_entity_linker.EntityLinker:EntityLinker'

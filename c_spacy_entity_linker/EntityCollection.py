@@ -8,8 +8,9 @@ MAX_ITEMS_PREVIEW=20
 
 class EntityCollection:
 
-    def __init__(self, entities=[]):
+    def __init__(self, entities=[], leg=None):
         self.entities = entities
+        self.linked_entity_graph = leg
 
     def __iter__(self):
         for entity in self.entities:
