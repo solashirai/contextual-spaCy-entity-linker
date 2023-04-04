@@ -75,14 +75,14 @@ class EntityLinker:
 
         stime = time.time()
         context_triples = self.run_construct_queries(all_entity_candidates=distinct_uris)
-        print("finished running construct queries, ", time.time()-stime)
+        #print("finished running construct queries, ", time.time()-stime)
         ent_to_trip = defaultdict(lambda: set())
         for (s,p,o) in context_triples:
             ent_to_trip[s].add((s,p,o))
             ent_to_trip[o].add((s,p,o))
         stime = time.time()
         optimized_candidates, core_entities, linking_entities = self.lp_disambiguate(candidate_spans, context_triples)
-        print('finished LP solving, ', time.time()-stime)
+        #print('finished LP solving, ', time.time()-stime)
 
         for span, entity in optimized_candidates.items():
             # Add the entity to the sentence-level EntityCollection
@@ -116,14 +116,14 @@ class EntityLinker:
 
         stime = time.time()
         context_triples = self.run_construct_queries(all_entity_candidates=distinct_uris)
-        print("finished running construct queries, ", time.time()-stime)
+        #print("finished running construct queries, ", time.time()-stime)
         ent_to_trip = defaultdict(lambda: set())
         for (s,p,o) in context_triples:
             ent_to_trip[s].add((s,p,o))
             ent_to_trip[o].add((s,p,o))
         stime = time.time()
         optimized_candidates, core_entities, linking_entities = self.lp_disambiguate(candidate_spans, context_triples)
-        print('finished LP solving, ', time.time()-stime)
+        #print('finished LP solving, ', time.time()-stime)
 
         entities = []
 
@@ -169,8 +169,8 @@ class EntityLinker:
             }
         }}
         """
-        print("querying...")
-        print(query_str)
+        #print("querying...")
+        #print(query_str)
 
         res_get = requests.get(url, params={'format':'json',
                                             'query': query_str})
@@ -237,13 +237,13 @@ class EntityLinker:
                 FILTER EXISTS {{ ?st ?ppp ?conn }}
             }}
             """
-            print("querying...")
-            print(query_str)
+            #print("querying...")
+            #print(query_str)
 
             res_get = requests.get(url, params={'format':'json',
                                                 'query': query_str})
             data = res_get.json()
-            print("query time: ", time.time()-stime)
+            #print("query time: ", time.time()-stime)
             wikidata_prop_pref = "http://www.wikidata.org/prop/"
             wikidata_entity = "http://www.wikidata.org/entity/Q" # wikidata entities start with Q ids
             for row in data['results']['bindings']:
@@ -289,9 +289,9 @@ class EntityLinker:
         # set up vars that indicate which WD entity a span is mapped to
         for span in mappings.keys():
             nounchunk_vars = []
-            print(span, "-----")
+            #print(span, "-----")
             for (ent, weight) in mappings.get(span, []):
-                print(ent.get_uri(), weight)
+                #print(ent.get_uri(), weight)
                 var = model.NewIntVar(0,1,"")
                 mapname = ent.get_uri()
                 uri2obj[mapname] = ent
@@ -308,7 +308,7 @@ class EntityLinker:
             # only 1 mapping can be selected for this noun
             model.Add(sum(nounchunk_vars) <= 1)
             # this objective term will help to prefer mapping choices with better regular search rank
-            objective_terms.append(sum([100*v*prior_weight[v] for v in nounchunk_vars]))
+            objective_terms.append(sum([1000*v*prior_weight[v] for v in nounchunk_vars]))
 
         # set up a dict "graph" first to make it easier to determine whether entities have direct or 1-hop
         # connections to each other
