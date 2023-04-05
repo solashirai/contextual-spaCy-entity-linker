@@ -20,11 +20,15 @@ class WeightedEntityClassifier:
 
     def _filter_max_length(self, entities):
         entities_by_length = self._get_grouped_by_length(entities)
-        max_length = max(list(entities_by_length.keys()))
-
-        return entities_by_length[max_length]
+        if entities_by_length.keys():
+            max_length = max(list(entities_by_length.keys()))
+            return entities_by_length[max_length]
+        else:
+            return []
 
     def _weight_max_prior(self, entities) -> List[Tuple[EntityElement, float]]:
+        if not entities:
+            return []
         priors = [entity.get_prior() for entity in entities]
         max_prior = max(priors)
         # take the sqrt of prior/max so that entities with lower priors have a slightly better weighting

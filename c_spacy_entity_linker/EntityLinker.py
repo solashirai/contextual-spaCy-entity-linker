@@ -209,6 +209,10 @@ class EntityLinker:
         result_triples = []
         url = self.query_url
         uris_to_label = set()
+        for ce in core_entities:
+            uris_to_label.add(ce)
+        for le in linking_entities:
+            uris_to_label.add(le)
 
         # simplify the query to use "wd" prefix to reduce data sent
         # possibly TODO, break up the query based on how many entities there are
